@@ -1,0 +1,35 @@
+# docker-compose.yml -- one-command local deployment of the API.
+#
+#   docker compose up --build      # build the image and start the service
+#   docker compose up -d           # run detached (in the background)
+#   docker compose logs -f api     # follow the logs
+#   docker compose down            # stop and remove the container
+#
+# The SQLite database is stored on a named volume so your data survives
+# container restarts and rebuilds.
+
+services:
+  api:
+    build: .
+    image: industrial-maintenance-api:latest
+    container_name: industrial-maintenance-api
+    ports:
+      # host:container -- browse http://127.0.0.1:8000/docs on your machine.
+      - "8000:8000"
+    environment:
+      # Point the app at the database file inside the mounted volume so the data
+      # persists. (database.py reads this variable, falling back to ./maintenance.db.)
+      DATABASE_URL: "sqlite:////data/maintenance.db"
+    volumes:
+      # Persist the SQLite file outside the container's writable layer.
+      - db_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://127.0.0.1:8000/health').status==200 else sys.exit(1)"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  db_data:
