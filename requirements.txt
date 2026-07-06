@@ -1,0 +1,14 @@
+# Core web framework and ASGI server
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+
+# Data validation / settings (installed transitively by FastAPI but pinned here
+# so the project is reproducible and the version is explicit).
+pydantic==2.7.4
+
+# ORM and database toolkit
+SQLAlchemy==2.0.31
+
+# Testing
+pytest==8.2.2
+httpx==0.27.0          # required by fastapi.testclient / Starlette TestClient

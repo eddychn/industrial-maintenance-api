@@ -1,0 +1,32 @@
+# Keep the Docker build context small and reproducible: don't copy local dev
+# artifacts, virtual environments or the local database into the image.
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local SQLite database (the container uses its own volume)
+*.db
+
+# Tests are not needed inside the runtime image
+tests/
+
+# VCS / IDE / OS noise
+.git/
+.gitignore
+.vscode/
+.idea/
+.DS_Store
+
+# Docs / tooling that don't belong in the image
+README.md
+postman_collection.json
+.claude/
