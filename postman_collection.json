@@ -1,0 +1,282 @@
+{
+  "info": {
+    "name": "Industrial Asset Maintenance Management API",
+    "description": "Complete Postman collection for every endpoint of the Industrial Asset Maintenance Management API. Set the `base_url` collection variable (default http://127.0.0.1:8000). A `machine_id` and `ticket_id` variable are captured automatically by the 'Create machine' and 'Create maintenance ticket' requests via test scripts.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000" },
+    { "key": "machine_id", "value": "1" },
+    { "key": "ticket_id", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Root",
+      "item": [
+        {
+          "name": "API root",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/", "host": ["{{base_url}}"], "path": [""] }
+          }
+        },
+        {
+          "name": "Liveness probe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/health", "host": ["{{base_url}}"], "path": ["health"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Machines",
+      "item": [
+        {
+          "name": "Create machine",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 201', function () { pm.response.to.have.status(201); });",
+                  "var json = pm.response.json();",
+                  "pm.collectionVariables.set('machine_id', json.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"CNC Lathe #4\",\n  \"department\": \"Machining\",\n  \"manufacturer\": \"Siemens\",\n  \"installation_date\": \"2022-05-14\",\n  \"operating_hours\": 1200.5,\n  \"health_score\": 85,\n  \"status\": \"Running\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/machines", "host": ["{{base_url}}"], "path": ["api", "machines"] }
+          }
+        },
+        {
+          "name": "List machines",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/machines?skip=0&limit=100",
+              "host": ["{{base_url}}"],
+              "path": ["api", "machines"],
+              "query": [
+                { "key": "skip", "value": "0" },
+                { "key": "limit", "value": "100" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get machine by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/machines/{{machine_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "machines", "{{machine_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update machine",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Idle\",\n  \"health_score\": 60,\n  \"operating_hours\": 1350\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/machines/{{machine_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "machines", "{{machine_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete machine",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/machines/{{machine_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "machines", "{{machine_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Maintenance",
+      "item": [
+        {
+          "name": "Create maintenance ticket",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 201', function () { pm.response.to.have.status(201); });",
+                  "var json = pm.response.json();",
+                  "pm.collectionVariables.set('ticket_id', json.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"machine_id\": {{machine_id}},\n  \"description\": \"Spindle bearing making abnormal noise.\",\n  \"priority\": \"High\",\n  \"scheduled_date\": \"2026-07-02\",\n  \"engineer_name\": \"Priya Nair\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/maintenance", "host": ["{{base_url}}"], "path": ["api", "maintenance"] }
+          }
+        },
+        {
+          "name": "List maintenance tickets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/maintenance?machine_id={{machine_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "maintenance"],
+              "query": [
+                { "key": "machine_id", "value": "{{machine_id}}" },
+                { "key": "ticket_status", "value": "Open", "disabled": true },
+                { "key": "skip", "value": "0", "disabled": true },
+                { "key": "limit", "value": "100", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get ticket by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/maintenance/{{ticket_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "maintenance", "{{ticket_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Assign engineer",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"engineer_name\": \"Rahul Verma\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/maintenance/{{ticket_id}}/assign",
+              "host": ["{{base_url}}"],
+              "path": ["api", "maintenance", "{{ticket_id}}", "assign"]
+            }
+          }
+        },
+        {
+          "name": "Update ticket status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/maintenance/{{ticket_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "maintenance", "{{ticket_id}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Update ticket (full)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"priority\": \"Critical\",\n  \"description\": \"Bearing replaced; monitoring vibration.\",\n  \"scheduled_date\": \"2026-07-03\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/maintenance/{{ticket_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "maintenance", "{{ticket_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Close ticket",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/maintenance/{{ticket_id}}/close",
+              "host": ["{{base_url}}"],
+              "path": ["api", "maintenance", "{{ticket_id}}", "close"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health & Analytics",
+      "item": [
+        {
+          "name": "Health for all machines",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/health/machines",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health", "machines"]
+            }
+          }
+        },
+        {
+          "name": "Health for one machine",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/health/machines/{{machine_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health", "machines", "{{machine_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Dashboard summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["api", "dashboard"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
