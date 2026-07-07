@@ -44,7 +44,8 @@ RUN useradd --create-home --uid 1000 appuser \
     && chown -R appuser:appuser /app
 USER appuser
 
-# Document the port the app listens on (informational; published via compose/-p).
+# Document the port the app listens on (informational). Cloud platforms inject
+# their own port via the PORT environment variable, which the CMD below honours.
 EXPOSE 8000
 
 # ---------------------------------------------------------------------------
@@ -52,13 +53,15 @@ EXPOSE 8000
 # ---------------------------------------------------------------------------
 # Hits the lightweight liveness endpoint so orchestrators know when the API is
 # ready / healthy. Uses Python (already present) to avoid adding curl/wget.
+# Reads the PORT env var (default 8000) so it works locally and on the cloud.
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request,sys; \
-        sys.exit(0) if urllib.request.urlopen('http://127.0.0.1:8000/health').status == 200 else sys.exit(1)"
+    CMD python -c "import os,urllib.request,sys; p=os.getenv('PORT','8000'); \
+        sys.exit(0) if urllib.request.urlopen(f'http://127.0.0.1:{p}/health').status == 200 else sys.exit(1)"
 
 # ---------------------------------------------------------------------------
 # Start the ASGI server.
 # ---------------------------------------------------------------------------
 # --host 0.0.0.0 is required so the server is reachable from outside the
-# container. No --reload in production.
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# container. Shell form so ${PORT} is expanded: cloud platforms (Render, AWS,
+# etc.) set PORT; locally it defaults to 8000. No --reload in production.
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}

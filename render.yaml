@@ -1,0 +1,14 @@
+# render.yaml — Render.com "Blueprint" for one-click deployment.
+#
+# With this file in the repo, Render can create the whole service automatically:
+#   Render dashboard → New → Blueprint → pick this repo → Apply.
+#
+# It builds the Dockerfile and runs the API on Render's free tier. Render injects
+# its own PORT environment variable, which the Dockerfile's start command honours.
+services:
+  - type: web
+    name: industrial-maintenance-api
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
