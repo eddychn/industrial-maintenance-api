@@ -29,4 +29,3 @@ tests/
 # Docs / tooling that don't belong in the image
 README.md
 postman_collection.json
-.claude/

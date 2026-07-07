@@ -42,7 +42,6 @@ htmlcov/
 # ─── IDE / editor / tooling ────────────────────────────────
 .vscode/
 .idea/
-.claude/
 *.swp
 
 # ─── OS files ──────────────────────────────────────────────
