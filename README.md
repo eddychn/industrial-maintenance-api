@@ -43,12 +43,13 @@ The API is deployed on Render — explore it live in your browser:
 | 1 | **Machine Management** | Create, read, update, delete and list factory machines. |
 | 2 | **Maintenance Module** | Raise tickets, assign engineers, update status, close tickets. |
 | 3 | **Health Monitoring** | Classifies each machine as **Healthy / Warning / Critical** from its health score. |
-| 4 | **Analytics Dashboard** | `GET /api/dashboard` returns fleet-wide KPIs. |
-| 5 | **Validation** | Pydantic validates every request; invalid data returns `422`. |
-| 6 | **API Docs** | Swagger UI (`/docs`) and ReDoc (`/redoc`) generated automatically. |
-| 7 | **Database** | SQLite, created automatically on first run. |
-| 8 | **Tests** | 23 automated tests (pytest + FastAPI TestClient). |
-| 9 | **Postman** | Complete collection covering every endpoint. |
+| 4 | **🤖 Predictive Maintenance (AI/ML)** | A scikit-learn model predicts each machine's **failure risk %** and recommends action *before* it breaks down. |
+| 5 | **Analytics Dashboard** | `GET /api/dashboard` returns fleet-wide KPIs. |
+| 6 | **Validation** | Pydantic validates every request; invalid data returns `422`. |
+| 7 | **API Docs** | Swagger UI (`/docs`) and ReDoc (`/redoc`) generated automatically. |
+| 8 | **Database** | SQLite, created automatically on first run. |
+| 9 | **Tests** | 27 automated tests (pytest + FastAPI TestClient). |
+| 10 | **Postman** | Complete collection covering every endpoint. |
 
 **Business rules built in:**
 - Raising a ticket automatically moves the machine into `Maintenance` status.
@@ -66,8 +67,48 @@ The API is deployed on Render — explore it live in your browser:
 - **SQLAlchemy 2.0 ORM** — database access
 - **SQLite** — file-based database
 - **Uvicorn** — ASGI server
+- **scikit-learn + NumPy** — predictive-maintenance machine-learning model
 - **pytest + httpx** — automated testing
 - **Swagger UI / OpenAPI** — interactive documentation
+
+---
+
+## Predictive Maintenance (AI/ML)
+
+Beyond storing and reporting machine data, the API includes a **predictive
+maintenance** model — the flagship AI use case in modern manufacturing. Instead
+of reacting *after* a machine breaks, the system predicts which machines are
+likely to fail **soon** so engineers can act ahead of time.
+
+**How it works**
+- A **scikit-learn** `RandomForest` classifier estimates the probability that a
+  machine will need maintenance soon, from three signals: **operating hours**,
+  **health score**, and **machine age**.
+- The probability is returned as a **failure risk %**, a **risk level**
+  (Low / Medium / High), and a concrete **recommendation**.
+- The model is trained lazily on first use and cached in memory — no model file
+  to ship, and predictions are deterministic (fixed random seed).
+
+**Example** (`GET /api/predictions/machines/{id}`):
+```json
+{
+  "machine_id": 1,
+  "machine_name": "CNC Lathe #4",
+  "health_score": 12,
+  "operating_hours": 58000,
+  "machine_age_days": 4205,
+  "failure_risk": 83.2,
+  "risk_level": "High",
+  "recommendation": "High risk — schedule maintenance immediately."
+}
+```
+
+> **A note on the training data (stated honestly):** a real deployment would
+> train on historical sensor and maintenance logs. As this is a portfolio
+> project without that data, the model is trained on **realistic synthetic
+> data** that mirrors real degradation patterns (more hours / lower health /
+> older age → higher risk). This is a standard, accepted way to demonstrate an
+> end-to-end ML pipeline. See [`app/ml/model.py`](app/ml/model.py) for details.
 
 ---
 
@@ -293,6 +334,13 @@ Base URL: `http://127.0.0.1:8000`
 | `GET` | `/api/health/machines` | Health condition of every machine |
 | `GET` | `/api/health/machines/{id}` | Health condition of one machine |
 | `GET` | `/api/dashboard` | Aggregated KPIs (see below) |
+
+### 🤖 Predictive Maintenance (AI/ML)
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/predictions/machines/{id}` | Predicted failure risk + recommendation for one machine |
+| `GET` | `/api/predictions/machines` | Predictions for every machine |
+| `GET` | `/api/predictions/at-risk` | Only the machines flagged **High** risk |
 
 **`GET /api/dashboard` returns:**
 ```json

@@ -9,6 +9,10 @@ pydantic==2.7.4
 # ORM and database toolkit
 SQLAlchemy==2.0.31
 
+# Machine learning (predictive-maintenance model)
+scikit-learn==1.5.1
+numpy==1.26.4
+
 # Testing
 pytest==8.2.2
 httpx==0.27.0          # required by fastapi.testclient / Starlette TestClient

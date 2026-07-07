@@ -17,7 +17,7 @@ from fastapi import FastAPI
 
 from . import __version__
 from .database import Base, engine
-from .routers import health, machines, maintenance
+from .routers import health, machines, maintenance, predictions
 
 # ---------------------------------------------------------------------------
 # Create tables.
@@ -51,6 +51,7 @@ app = FastAPI(
 app.include_router(machines.router)
 app.include_router(maintenance.router)
 app.include_router(health.router)
+app.include_router(predictions.router)
 
 
 @app.get("/", tags=["Root"], summary="API root / welcome message")

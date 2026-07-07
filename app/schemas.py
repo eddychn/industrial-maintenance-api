@@ -182,6 +182,24 @@ class DashboardSummary(BaseModel):
 
 
 # ===========================================================================
+# Predictive maintenance (AI/ML) schemas
+# ===========================================================================
+class MachinePrediction(BaseModel):
+    """ML-predicted maintenance outlook for a single machine."""
+
+    machine_id: int
+    machine_name: str
+    health_score: float
+    operating_hours: float
+    machine_age_days: int
+    failure_risk: float = Field(
+        ..., description="Predicted probability of needing maintenance soon (0-100%)."
+    )
+    risk_level: str = Field(..., description="Low, Medium, or High.")
+    recommendation: str = Field(..., description="Suggested action for the engineer.")
+
+
+# ===========================================================================
 # Generic message schema
 # ===========================================================================
 class Message(BaseModel):
