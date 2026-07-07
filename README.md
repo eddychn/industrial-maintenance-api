@@ -1,5 +1,10 @@
 # Industrial Asset Maintenance Management API
 
+[![CI](https://github.com/eddychn/industrial-maintenance-api/actions/workflows/ci.yml/badge.svg)](https://github.com/eddychn/industrial-maintenance-api/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-async-009688.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+
 A production-style **FastAPI** backend for a manufacturing company to manage
 factory machines, schedule maintenance, report faults and monitor machine
 health. Built to demonstrate industry-standard backend architecture, clean code,
