@@ -5,6 +5,17 @@ factory machines, schedule maintenance, report faults and monitor machine
 health. Built to demonstrate industry-standard backend architecture, clean code,
 validation, automated tests and API documentation.
 
+### 🚀 Live Demo
+
+The API is deployed on Render — explore it live in your browser:
+
+- **Interactive API docs (Swagger UI):** https://industrial-maintenance-api.onrender.com/docs
+- **Alternative docs (ReDoc):** https://industrial-maintenance-api.onrender.com/redoc
+
+> ℹ️ Hosted on Render's free tier, so the first request after a period of
+> inactivity may take ~30–50 seconds to wake the service up. Subsequent requests
+> are fast.
+
 ---
 
 ## Table of Contents
